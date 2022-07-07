@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+  <head>
+  	<title>Snake Game: Play Now</title>
+	<!-- page icon -->
+	<link rel="icon" href="snake.gif" type="image/gif">
+	<!-- jQuery -->
+	<script src="https:ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<!-- CSS only -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Aclonica"/>
+	<!-- JavaScript Bundle with Popper -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+	<style>
+		body { 
+		background-image:url('jungle.gif'); 
+		background-repeat:repeat; 
+		}
+		
+		#snakeboard {
+		display:none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+		right: 50%;
+        transform: translate(-50%, -50%);
+		border: 20px solid #d58e5e;
+      }
+	  
+      #score {
+		display:none;
+		background:black;
+		height:85px;
+		width:40%;
+		right:10%;
+		position:absolute;
+		top: -1%;
+        text-align: center;
+        font-size: 69px;
+		font-family:Fantasy;
+		color:white;
+      }
+	  
+	  #musiccontrol {
+	  width:90px;
+	  height:90px;
+	  position:absolute;
+	  top:74%;
+	  left:93%;
+	  border-radius:95%;
+	  z-index:2;
+	  }
+	  
+	  #musiccontrol:hover {
+	  box-shadow: 0 0 0 6px white;
+	}
+	 
+	 .playername {
+		display: block;
+		position: fixed;
+		z-index: 1;
+		padding-top: 150px;
+		left: 100;
+		top: 0;
+		width: 100%; 
+		height: 100%;
+		overflow: auto;
+		background-color: rgba(0,0,0,0.4);
+	}
+
+	.playername-content {
+		position: relative;
+		background-color: #fefefe;
+		font-family: cursive;
+		margin: auto;
+		padding: 0;
+		border: 1px solid #888;
+		width: 60%;
+		box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+		top:-300px;
+		opacity:0;
+	}
+	
+	.playername-header {
+		padding: 2px 16px;
+		background-color: #98FB98;
+		color: black;
+		font-family: aclonica;
+		font-size: 300%;
+	}
+
+	.playername-body {padding: 35px 100px;}
+
+	#pname {
+		width: 50%;
+		padding: 12px 20px;
+		margin: 8px 200px;
+		box-sizing: border-box;
+		border: none;
+		border-bottom: 2px solid red;
+		background-image: url('searchicon.png');
+		background-position: 10px 10px; 
+	}
+	
+	.playername-footer {
+		padding: 2px 18px;
+		background-color: #98FB98;
+		color: black;
+		font-size: 100%;
+		font-family: cursive;
+	}
+	
+	.buttongrp{
+		position: relative;
+		left: 42%;
+	}
+
+	.resultpage {
+		display: none;
+		position: fixed;
+		z-index: 1;
+		padding-top: 150px;
+		left: 100;
+		top: 0;
+		width: 100%; 
+		height: 100%;
+		overflow: auto;
+		background-color: rgba(0,0,0,0.4);
+	}
+
+	.resultpage-content {
+		position: relative;
+		background-color: #fefefe;
+		font-family: cursive;
+		text-align:center;
+		margin: auto;
+		padding: 0;
+		border: 1px solid #888;
+		width: 60%;
+		box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+		top:-300px;
+		opacity:0;
+	}
+	
+	.resultpage-header {
+		padding: 2px 16px;
+		background-color: #FFD580;
+		color: black;
+		font-family: aclonica;
+		font-size: 300%;
+	}
+
+	.resultpage-body {padding: 35px 100px;}
+
+	.resultpage-footer {
+		padding: 0px 16px;
+		background-color: #FFD580;
+		color: black;
+		font-size: 100%;
+		font-family: cursive;
+	}
+	
+	a:link{text-decoration: none;}
+	  
+	</style>
+	
+	<script>
+	$(document).ready(function(){
+	$(".playername-content").animate({top:0,opacity:1},300);
+	setTimeout(function(){$("#pname").focus();},1000);
+    const board_background = "black";
+    const snake_col = '#AAFF00';
+    const snake_border = 'green';
+    
+    var snake = [
+      {x: 200, y: 200},
+      {x: 190, y: 200},
+      {x: 180, y: 200},
+      {x: 170, y: 200},
+      {x: 160, y: 200}
+    ]
+	
+	var music = $("#sound")[0];
+    var score = 0;
+	var gamername = "";
+	
+     <!-- True if changing direction -->
+    var changing_direction = false;
+	 <!-- True if bgm muted -->
+	var muted = false;
+     <!-- Horizontal velocity -->
+    var food_x;
+    var food_y;
+    var dx = 10;
+     <!-- Vertical velocity -->
+    var dy = 0;
+    
+    
+     <!-- Get the canvas element -->
+    const snakeboard = document.getElementById("snakeboard");
+     <!-- Return a two dimensional drawing context -->
+    const snakeboard_ctx = snakeboard.getContext("2d");
+     
+	 
+	 <!-- Start game -->
+    $("#who").submit(function(){
+		gamername = $("#pname").val();
+		$("#pname").blur();
+		
+		$(".playername").css("display","none");
+		$("#snakeboard").css("display","block");
+		$("#score").css("display","block");
+		main();
+		return false;
+	});
+
+    gen_food();
+    
+     <!-- main function called repeatedly to keep the game running -->
+    function main() {
+		
+        if (has_game_ended()){
+			$("#snakeboard").fadeOut(1000);
+			$("#score").fadeOut(500);
+			
+			music.loop=false;
+			music.src="gameover.mp3";
+			music.autoplay=false;
+			if(muted===false)
+				music.play();
+			result();
+			return;
+		}
+		
+			
+        changing_direction = false;
+        setTimeout(function onTick() {
+        clear_board();
+        drawFood();
+        move_snake();
+        drawSnake();
+         <!-- Repeat -->
+        main();
+      }, 100);
+    }
+	
+	function result() {
+	if(score<150)
+		var stars = "one.png";
+	else if (score<300)
+		var stars = "two.png";
+	else
+		var stars = "three.png";
+		
+	$("#star").attr("src",stars);
+	$(".resultpage").css("display","block");
+	$(".resultpage-body p").html("Well Played <b>"+gamername+"</b>! You Have Scored <b>"+score+" Points</b>!");
+	$(".resultpage-content").animate({top:0,opacity:1},300);
+		
+	
+	}
+	
+	$("#musiccontrol").click(function() {
+		if (muted === false) {
+			music.pause();
+			$(this).attr("src","music_off.png");
+			muted = true;
+		} else {
+			music.play();
+			muted = false;
+			$(this).attr("src","music_on.png");
+		}
+	});
+	
+    
+     <!-- draw a border around the canvas -->
+    function clear_board() {
+	<!-- Select the colour to fill the drawing -->
+      snakeboard_ctx.fillStyle = board_background;
+    <!-- Draw a "filled" rectangle to cover the entire canvas -->
+      snakeboard_ctx.fillRect(0, 0, snakeboard.width, snakeboard.height);
+    <!-- Draw a "border" around the entire canvas -->
+      snakeboard_ctx.strokeRect(0, 0, snakeboard.width, snakeboard.height);
+    }
+    
+     <!-- Draw the snake on the canvas -->
+    function drawSnake() {
+       <!-- Draw each part -->
+      snake.forEach(drawSnakePart)
+    }
+
+    function drawFood() {
+      snakeboard_ctx.fillStyle = 'red';
+      snakeboard_ctx.strokeStyle = 'white';
+      snakeboard_ctx.fillRect(food_x, food_y, 10, 10);
+      snakeboard_ctx.strokeRect(food_x, food_y, 10, 10);
+    }
+    
+     <!-- Draw one snake part -->
+    function drawSnakePart(snakePart) {
+	
+       <!-- Set the colour of the snake part -->
+      snakeboard_ctx.fillStyle = snake_col;
+       <!-- Set the border colour of the snake part -->
+      snakeboard_ctx.strokeStyle = snake_border;
+       <!-- Draw a "filled" rectangle to represent the snake part at the coordinates the part is located -->
+      snakeboard_ctx.fillRect(snakePart.x, snakePart.y, 10, 10);
+       <!-- Draw a border around the snake part -->
+      snakeboard_ctx.strokeRect(snakePart.x, snakePart.y, 10, 10);
+    }
+
+    function has_game_ended() {
+      for (var i = 4; i < snake.length; i++) {
+        if (snake[i].x === snake[0].x && snake[i].y === snake[0].y) return true
+      }
+      const hitLeftWall = snake[0].x < 0;
+      const hitRightWall = snake[0].x > snakeboard.width - 10;
+      const hitToptWall = snake[0].y < 0;
+      const hitBottomWall = snake[0].y > snakeboard.height - 10;
+      return hitLeftWall || hitRightWall || hitToptWall || hitBottomWall
+    }
+
+    function gen_food() {
+       <!-- Generate a random number the food x-coordinate -->
+      food_x = random_food(0, snakeboard.width - 10);
+       <!-- Generate a random number for the food y-coordinate -->
+      food_y = random_food(0, snakeboard.height - 10);
+       <!-- if the new food location is where the snake currently is, generate a new food location -->
+      snake.forEach(function has_snake_eaten_food(part) {
+        const has_eaten = part.x == food_x && part.y == food_y;
+        if (has_eaten) gen_food();
+      });
+    }
+	
+	function random_food(min, max) {
+      return Math.round((Math.random() * (max-min) + min) / 10) * 10;
+    }
+	
+  <!-- Event Listener for keypress -->
+    document.addEventListener("keydown", change_direction);
+	
+    function change_direction(event) {
+	  const keyPressed = event.keyCode;
+      const LEFT_KEY = 37;
+      const RIGHT_KEY = 39;
+      const UP_KEY = 38;
+      const DOWN_KEY = 40;
+	  const MUTE_KEY = 17;
+	  
+	  if(keyPressed=== MUTE_KEY)
+		$("#musiccontrol").click();
+		
+      
+     <!-- Prevent the snake from reversing -->
+    
+      else if (changing_direction) return;
+      changing_direction = true;
+      const goingUp = dy === -10;
+      const goingDown = dy === 10;
+      const goingRight = dx === 10;
+      const goingLeft = dx === -10;
+      if (keyPressed === LEFT_KEY && !goingRight) {
+        dx = -10;
+        dy = 0;
+      }
+      if (keyPressed === UP_KEY && !goingDown) {
+        dx = 0;
+        dy = -10;
+      }
+      if (keyPressed === RIGHT_KEY && !goingLeft) {
+        dx = 10;
+        dy = 0;
+      }
+      if (keyPressed === DOWN_KEY && !goingUp) {
+        dx = 0;
+        dy = 10;
+      }
+    }
+
+    function move_snake() {
+       <!-- Create the new Snake's head -->
+      const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+       <!-- Add the new head to the beginning of snake body -->
+      snake.unshift(head);
+      const has_eaten_food = snake[0].x === food_x && snake[0].y === food_y;
+      if (has_eaten_food) {
+         <!-- Increase score -->
+        score += 10;
+         <!-- Display score on screen -->
+        $("#score").text("SCORE : "+score);
+         <!-- Generate new food location -->
+        gen_food();
+      } else {
+         <!-- Remove the last part of snake body -->
+        snake.pop();
+      }
+    }
+	});
+    
+  </script>
+	
+  </head>
+
+  <body>
+
+    <div id="score">SCORE : 0</div>
+    <canvas align=center id="snakeboard" width="400" height="400"></canvas>
+	<!-- Music -->
+	<audio autoplay loop id="sound">
+		<source src="bgm.mp3" type="audio/mpeg" />
+	</audio>
+	<!-- Music Toggle Button -->
+	<img id="musiccontrol" src="music_on.png" />
+
+
+
+<!-- The playername -->
+<div class="playername">
+
+  <!-- playername content -->
+  <div class="playername-content">
+    <div class="playername-header">
+      <p align=center><img src="snake.png" width=40 height=40/>PLAYER INFO</p>
+    </div>
+    <div class="playername-body">
+      <form id="who">
+	  <p align=center><img src="snake.gif" width=100px height=100px /></p>
+			<input type="text" id="pname" placeholder="Enter Your Player Name" pattern="^[a-zA-Z\.\s]*$" required/>
+			<span class="buttongrp">
+			<button type="submit" class="btn btn-success">Save</button>
+			<button class="btn btn-danger"  onclick="location.href='snakegame.html'">Cancel</button>
+			</span>
+	  </form>
+    </div>
+    <div class="playername-footer">
+      <p align=center>► Player Name must have Alphabets, Whitespace & Dot(.) only!</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="resultpage">
+  <div class="resultpage-content">
+    <div class="resultpage-header">
+      <p align=center>GAME OVER!<br><img id="star" src="" alt="Error Computing Rating" width=100px height=100px/></p>
+    </div>
+    <div class="resultpage-body"><p></p>
+	<span class="buttongrp">
+		<button class="btn btn-success" onclick="location.href='snakegame.html'">Back To Home</button>
+		<button class="btn btn-danger" onclick="window.location.reload()">Retry</button>
+	</span>
+	</div>
+    <div class="resultpage-footer">
+    <p align=center>© 2022 <b>Snake Game</b> Developed by <b><a href="https://github.com/govindkrishnan" target="_blank">Govind Krishnan</a></b></p>
+    </div>
+  </div>
+
+</div>
+
+  </body>
+</html>

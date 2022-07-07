@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+  <head>
+  	<title>Snake Game: Home</title>
+	<!-- page icon -->
+	<link rel="icon" href="snake.gif" type="image/gif">
+	<!-- jQuery -->
+	<script src="https:ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<!-- CSS only -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"/>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Aclonica"/>
+	<!-- JavaScript Bundle with Popper -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+	<style>
+		body { 
+		background-image:url('jungle.gif'); 
+		background-repeat:repeat; 
+		}
+		#musiccontrol {
+		width:90px;
+		height:90px;
+		position:absolute;
+		top:74%;
+		left:93%;
+		border-radius:95%;
+		z-index:2;
+	  }
+	  
+	  #musiccontrol:hover {
+	  box-shadow: 0 0 0 6px white;
+	}
+	
+	.menu {
+		display: block;
+		position: fixed;
+		z-index: 1;
+		padding-top: 150px;
+		left: 100;
+		top: 0;
+		width: 100%; 
+		height: 100%;
+		overflow: auto;
+		background-color: rgba(0,0,0,0.4);
+	}
+	.menu-content {
+		position: relative;
+		background-color: #fefefe;
+		font-family: cursive;
+		margin: auto;
+		padding: 0;
+		border: 1px solid #888;
+		width: 60%;
+		box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+		top:-300px;
+		opacity:0;
+	}
+	
+	.menu-header {
+		padding: 2px 16px;
+		background-color: #F8DE73;
+		color: black;
+		font-family: Aclonica;
+		font-size: 300%;
+	}
+
+	.menu-body {padding: 35px 100px;}
+	
+	#buttongrp{
+		position: relative;
+		left: 34%;
+	}
+	
+	#buttongrp button{
+		margin-top:10px;
+		width:250px;
+	}
+	
+	.menu-footer {
+		padding: 0px 16px;
+		background-color: #F8DE73;
+		color: black;
+		font-size: 100%;
+		font-family: cursive;
+	}
+	
+	.help {
+		display: none;
+		position: fixed;
+		z-index: 1;
+		padding-top: 150px;
+		left: 100;
+		top: 0;
+		width: 100%; 
+		height: 100%;
+		overflow: auto;
+		background-color: rgba(0,0,0,0.4);
+	}
+	.help-content {
+		position: relative;
+		background-color: #fefefe;
+		font-family: cursive;
+		margin: auto;
+		padding: 0;
+		border: 1px solid #888;
+		width: 60%;
+		height:100%;
+		overflow-y:auto;
+		box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+		top:-300px;
+		opacity:0;
+	}
+	
+	.help-header {
+		position:fixed;
+		width:59.85%;
+		padding: 2px 16px;
+		background-color: #F8DE73;
+		color: black;
+		font-family: Aclonica;
+		font-size: 300%;
+		z-index:3;
+	}
+	
+	.help-header #buttongrp {
+		position:relative;
+		left:5%;
+	}
+
+	.help-body {padding: 169px 100px 0px 100px;}
+	
+	.help-footer {
+		padding: 0px 16px;
+		background-color: #F8DE73;
+		color: black;
+		font-size: 100%;
+		font-family: cursive;
+	}
+	
+	a{text-decoration:none;}
+	
+	table,th,td{
+	border:3px dashed brown;
+	text-align:center;
+	padding: 20px;
+	}
+	
+	table img{
+		width:75px;
+		height:75px;
+	}
+	
+	h2{
+	color:red;
+	text-decoration:underline;
+	}
+	</style>
+	<script>
+	$(document).ready(function(){
+	var music = $("#sound")[0];
+	<!-- True if bgm muted -->
+	var muted = false;
+	<!-- Event Listener for keypress -->
+	document.addEventListener("keydown", function(){
+		const MUTE_KEY = 17;
+		if(event.keyCode === MUTE_KEY)
+		$("#musiccontrol").click();
+	});
+		
+	$(".menu-content").animate({top:0,opacity:1},250);
+	
+	$("#musiccontrol").click(function() {
+		if (muted === false) {
+			music.pause();
+			$(this).attr("src","music_off.png");
+			muted = true;
+		} else {
+			music.play();
+			muted = false;
+			$(this).attr("src","music_on.png");
+		}
+		});
+		
+		$("#helpme").click(function () {
+			$(".menu-content").animate({top:-300,opacity:0},100);
+			$(".help").css("display","block");
+			$(".help-content").animate({top:-100,opacity:1},150);
+		});
+		
+		$("#backbtn").click(function () {
+			$(".help-content").animate({top:-300,opacity:0},100);
+			$(".help").css("display","none");
+			$(".menu-content").animate({top:0,opacity:1},200);
+			
+		});
+		
+		});
+	
+	</script>
+	</head>
+	
+	<body>
+	<!-- Music -->
+	<audio autoplay loop id="sound">
+		<source src="bgm.mp3" type="audio/mpeg" />
+	</audio>
+	<!-- Music Toggle Button -->
+	<img id="musiccontrol" src="music_on.png" />
+	
+	<div class="menu">
+
+  <!-- menu content -->
+  <div class="menu-content">
+    <div class="menu-header">
+      <p align=center><img src="snake.png" width=40 height=40/>SNAKE GAME</p>
+    </div>
+    <div class="menu-body">
+	  <p align=center><img src="snake.gif" width=100px height=100px /></p>
+			<span id="buttongrp">
+				<button class="btn btn-success btn-lg" onclick="location.href='gameplay.html'" type="button">Play Now</button><br>
+				<button class="btn btn-primary btn-lg" id="helpme" type="button">Help</button>
+			</span>
+    </div>
+    <div class="menu-footer">
+      <p align=center>© 2022 <b>Snake Game</b> Developed by <b><a href="https://github.com/govindkrishnan" target="_blank">Govind Krishnan</a></b></p>
+    </div>
+  </div>
+
+</div>
+
+	<div class="help">
+
+  <!-- help content -->
+  <div class="help-content">
+    <div class="help-header">
+      <p align=center><img src="snake.png" width=40 height=40/>HELP</p>
+	  <span id="buttongrp">
+				<button class="btn btn-primary" id="backbtn" type="button">Go Back</button>
+				<button class="btn btn-dark" onclick="window.open('https://www.youtube.com/embed/AJLks87C_kw')" type="button">Watch Gameplay Demo</button>
+				<button class="btn btn-success" onclick="location.href='gameplay.html'" type="button">Play Now</button><br>
+	  </span>
+	  
+    </div>
+    <div class="help-body">
+	  <img style="float:right;margin:10px 15px;" src="snake.gif" width=100px height=100px /><br>
+	  <p align=center>
+	  <h2>Rules</h2>
+	  <ul type="disc">
+		<li>Snake Must Eat The Red Apples to Grow Longer.</li>
+		<li>Snake Must Not Hit The Border Walls.</li>
+		<li>Snake Must Not Bite Its Own Body.</li>
+		<li>Snake Can't Travel in Reverse Without Turning Around.</li>
+	 </ul>
+	 <hr>
+	 <h2>Scoring</h2>
+	  <ul type="square">
+		<li>Snake Gets 10 Points for Each Apple Eaten.</li>
+		<li>If Final Total Points is Less Than 150, You Get 1 Star Rating.</li>
+		<li>If Final Total Points is 150+ But Less than 300, You Get 2 Stars Rating.</li>
+		<li>If Final Total Points is 300 or More, You Get 3 Stars Rating.</li>
+	 </ul>
+	 <hr>
+	  
+	  <h2>Keyboard Keys To Use</h2>
+	  <table>
+		<tr>
+		<th><img src="keys icon.png" alt="keys"/></th>
+		<th>USAGE</th>
+		</tr>
+		<tr>
+		<td><img src="keyup.png" alt="up"/></td>
+		<td>Moves Snake Up</th>
+		</tr>
+		<tr>
+		<td><img src="keydown.png" alt="down"/></td>
+		<td>Moves Snake Down</th>
+		</tr>
+		<tr>
+		<td><img src="keyleft.png" alt="left"/></td>
+		<td>Moves Snake Left</th>
+		</tr>
+		<tr>
+		<td><img src="keyright.png" alt="right"/></td>
+		<td>Moves Snake Right</th>
+		</tr>
+		<tr>
+		<td><img src="ctrl.webp" alt="ctrl"/></td>
+		<td>Toggles Game Sounds</th>
+		</tr>
+	  </table><br>
+	  </p>
+    </div>
+    <div class="help-footer">
+      <p align=center>© 2022 <b>Snake Game</b> Developed by <b><a href="https://github.com/govindkrishnan" target="_blank">Govind Krishnan</a></b></p>
+    </div>
+  </div>
+</div>
+</body>
+</html>
